@@ -1,0 +1,73 @@
+﻿@{
+    Layout = null;
+}
+<!doctype html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <title>微信商城小程序后台登陆</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <link href="~/css/font.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+
+</head>
+<body class="login-bg">
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">微信商城小程序后台</div>
+        <div id="darkbannerwrap"></div>
+        <div method="post" class="layui-form">
+            <input id="UserName" value="" placeholder="输入登陆账号" type="text" lay-verify="required|UserName" class="layui-input" maxlength="30">
+            <hr class="hr15">
+            <input id="userPassWord" value="" lay-verify="required|password" placeholder="密码" type="password" class="layui-input" maxlength="30">
+            <hr class="hr15">
+            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit" id="button">
+            <hr class="hr20">
+        </div>
+    </div>
+
+    <script>
+        $("#button").click(function () {
+            var userName = $("#UserName").val();
+            var userPassWord = $("#userPassWord").val();
+            if (userName == "" || userPassWord == "") {
+                layer.msg("用户名或密码不能为空！", { icon: 2, time: 2000 });
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                data: {
+                    userName: userName,
+                    userPassWord: userPassWord
+                },
+                dataType: 'json',
+                url: "/Login/Logings",
+                success: function (data) {
+                    console.log(data);
+                    if (data == 404) {
+                        layer.msg("请联系管理员", { icon: 2, time: 2000 });
+                    }
+                    if (data == 500) {
+                        layer.msg("账号输入错误！", { icon: 2, time: 2000 });
+                    }
+                    if (data == 501) {
+                        layer.msg("密码输入错误！", { icon: 2, time: 2000 });
+                    }
+                    if (data !== 500 && data !== 404 && data !== 501) {
+                        layer.msg("登陆成功！", { icon: 1, time: 2000 });
+                        window.location.href = encodeURI("/Home/HomeAsync?Id=" + data + "");
+                    }
+                }
+            });
+            return false;
+        })
+    </script>
+</body>
+</html>

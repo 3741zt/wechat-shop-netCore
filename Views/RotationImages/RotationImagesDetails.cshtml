@@ -1,0 +1,99 @@
+﻿@model ztbiyesheji.Models.RotationImage
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <link href="~/css/font.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+</head>
+<body>
+    <div class="x-body">
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>轮播图图片地址
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="RotationImagesUrl" class="layui-input" value=" @Model.RotationImageUrl">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>轮播图图片效果展示
+                </label>
+                <div class="layui-input-inline">
+                    <img src="@Model.RotationImageUrl" id="img-change">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>轮播图跳转地址
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="RotationImagesJumpUrl" class="layui-input" value="@Model.RotationImageJumpUrl">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn"  onclick="CheckRotationImages('@Model.RotationImageCode','@Model.RotationImageUrl','@Model.RotationImageJumpUrl')" href="javascript:;">
+                    确认修改
+                </button>
+            </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $("#RotationImagesUrl").bind('input propertychange', function () {
+        var RotationImagesUrl = $("#RotationImagesUrl").val();
+        $("#img-change").attr("src", RotationImagesUrl);
+    }); 
+    function CheckRotationImages(code,ImageUrl,ImageJumpUrl) {
+        if (code == "") {
+            layer.msg('请选择需要修改的数据!', { icon: 2, time: 1000 });
+        }
+        var RotationImagesUrl = $("#RotationImagesUrl").val();
+        var RotationImagesJumpUrl = $("#RotationImagesJumpUrl").val();
+        if (RotationImagesUrl == ImageUrl || RotationImagesJumpUrl == ImageJumpUrl) {
+            layer.msg("请输入修改数据！", { icon: 2, time: 1000 });
+            return;
+        }
+        if (RotationImagesUrl == "") {
+            layer.msg("请输入正确的图片地址！", { icon: 2, time: 1000 });
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            data: {
+                RotationImagesUrl: RotationImagesUrl,
+                RotationImagesJumpUrl: RotationImagesJumpUrl,
+                code: code
+            },
+            dataType: 'json',
+            url: "/RotationImages/CheckRotationImages",
+            success: function (data) {
+                if (data == 404) {
+                    layer.msg('修改失败!没有输入正确的数据', { icon: 2, time: 2000 })
+                }
+                if (data == 200) {
+                    layer.msg('修改成功!', { icon: 1, time: 2000 }, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                        // 可以对父窗口进行刷新 
+                        x_admin_father_reload();
+                    })
+                }
+            },
+        });
+    }
+</script>

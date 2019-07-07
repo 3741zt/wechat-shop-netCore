@@ -1,0 +1,189 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = null;
+}
+@model ztbiyesheji.Models.AdminUser
+
+<!doctype html>
+<html class="x-admin-sm">
+<head>
+    <title>微信商城小程序后台</title>
+    <link href="~/css/font.css" rel="stylesheet" />
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+</head>
+<body>
+    <!-- 顶部开始 -->
+    <div class="container">
+        <div class="logo"><a href="./index.html">微信商城小程序后台</a></div>
+        <div class="left_open">
+            <i title="展开左侧栏" class="iconfont">&#xe699;</i>
+        </div>
+        <ul class="layui-nav right" lay-filter="">
+            <li class="layui-nav-item">
+                <a href="javascript:;"> @Model.AdminUserName</a>
+                <dl class="layui-nav-child">
+                    <!-- 二级菜单 -->
+                    <dd><a onclick="x_admin_show('个人信息:@Model.AdminUserName','/AdminUsers/AdminUsersDetails?Id=@Model.AdminUserCode')">个人信息</a></dd>
+                    <dd><a asp-action="RemoveSeeion">退出</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item to-index">@Model.RoleType</li>
+        </ul>
+    </div>
+    <!-- 顶部结束 -->
+    <!-- 中部开始 -->
+    <!-- 左侧菜单开始 -->
+    <div class="left-nav">
+        <div id="side-nav">
+            <ul id="nav">
+                @if (Model.RoleType.ToString() == "轮播图管理" || Model.RoleType.ToString() == "超级管理员")
+                {
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont">&#xe820;</i>
+                            <cite>轮播图管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li date-refresh="1">
+                                <a _href="/RotationImages/RotationImagesIndex">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>轮播图列表</cite>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                @if (Model.RoleType.ToString() == "订单管理员" || Model.RoleType.ToString() == "超级管理员")
+                {
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont">&#xe723;</i>
+                            <cite>订单管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li date-refresh="1">
+                                <a _href="/GoodsOrder/GoodsOrdersIndex">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>订单列表</cite>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                }
+                @if (Model.RoleType.ToString() == "商品管理员" || Model.RoleType.ToString() == "超级管理员")
+                {
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont">&#xe722;</i>
+                            <cite>商品管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a href="javascript:;">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>分类管理</cite>
+                                    <i class="iconfont nav_right">&#xe697;</i>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li>
+                                        <a _href="/Goods/GoodsClassificationIndex">
+                                            <i class="iconfont">&#xe6a7;</i>
+                                            <cite>商品品牌分类</cite>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="javascript:;">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>信息管理</cite>
+                                    <i class="iconfont nav_right">&#xe697;</i>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li>
+                                        <a _href="/Goods/GoodsInfoIndex">
+                                            <i class="iconfont">&#xe6a7;</i>
+                                            <cite>商品信息列表</cite>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a _href="/Goods/GoodsDetailIndex">
+                                            <i class="iconfont">&#xe6a7;</i>
+                                            <cite>商品详细信息列表</cite>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a _href="/Goods/GoodsDetailImageIndex">
+                                            <i class="iconfont">&#xe6a7;</i>
+                                            <cite>商品详细信息图片列表</cite>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                @if (Model.RoleType.ToString() == "超级管理员")
+                {
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont">&#xe726;</i>
+                            <cite>管理员管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a _href="/AdminUsers/AdminUsersIndex">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>管理员列表</cite>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <!-- <div class="x-slide_left"></div> -->
+    <!-- 左侧菜单结束 -->
+    <!-- 右侧主体开始 -->
+    <div class="page-content">
+        <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+            <ul class="layui-tab-title">
+                <li class="home"><i class="layui-icon">&#xe68e;</i>我的桌面</li>
+            </ul>
+            <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+                <dl>
+                    <dd data-type="this">关闭当前</dd>
+                    <dd data-type="other">关闭其它</dd>
+                    <dd data-type="all">关闭全部</dd>
+                </dl>
+            </div>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <iframe src='/Home/Welcome' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                </div>
+            </div>
+            <div id="tab_show">
+
+            </div>
+        </div>
+    </div>
+    <div class="page-content-bg"></div>
+    <!-- 右侧主体结束 -->
+    <!-- 中部结束 -->
+    <!-- 底部开始 -->
+    <div class="footer">
+        <div class="copyright">Copyright ©2018 周泰微信商城小程序</div>
+    </div>
+    <!-- 底部结束 -->
+</body>
+</html>

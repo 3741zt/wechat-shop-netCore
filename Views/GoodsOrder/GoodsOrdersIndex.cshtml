@@ -1,0 +1,221 @@
+﻿@model PaginatedList<ztbiyesheji.Models.GoodsOrders>
+@using ContosoUniversity;
+@using ztbiyesheji.Models;
+@{
+
+    Layout = null;
+    var a = @ViewData["currentFilter"];
+    //int t = @ViewBag.Totalpage;;
+}
+
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <link href="~/css/font.css" rel="stylesheet" />
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+</head>
+<body>
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">添加</a>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i>
+        </a>
+    </div>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" asp-action="GoodsOrdersIndex">
+            <input type="text" placeholder="请输入关键字" autocomplete="off" class="layui-input" name="search" value="@ViewData["currentFilter"]">
+            <button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        @if (a == null)
+        {
+
+            <span class="x-right" style="line-height:40px">共有数据：@ViewBag.Total 条,共有页数：@ViewBag.Totalpage 页 </span>
+        }
+        @if (a != null)
+        {
+
+            <span class="x-right" style="line-height:40px">共有数据：@ViewBag.SearchCount 条,共有页数： @ViewBag.SearchPage 页 </span>
+        }
+    </xblock>
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>订单编号</th>
+                <th>订单所属用户</th>
+                <th>订单收货人姓名</th>
+                <th>订单收货人联系方式</th>
+                <th>订单收货地址</th>
+                <th>订单商品名称</th>
+                <th>订单商品图片</th>
+                <th>下单时间</th>
+                <th>订单状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                GoodsInfo OrderGoodsInfo =((List<GoodsInfo>)ViewBag.odrergoodsinfo).FirstOrDefault(m => m.GoodsInfoCode == item.GoodsInfoCode);
+                UserApp UserWxName = ((List<UserApp>)ViewBag.user).FirstOrDefault(m => m.UserAppCode == item.UserAppCode);
+                var timesstr = item.UserOrdersDateTime.Substring(0, 10);
+                DateTime time = DateTime.Now;
+                DateTime OrdersTime = Convert.ToDateTime(timesstr);
+                TimeSpan Times = time - OrdersTime;
+            <tr>
+                <td>
+                    @item.GoodsOrdersCode
+                </td>
+                <td>
+                    @UserWxName.WxName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserAddressesName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserAddressesPhoneNum)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserAddressDetail)
+                </td>
+                <td>
+                    @OrderGoodsInfo.GoodsInfoName
+                </td>
+                <td>
+                    <img src="@OrderGoodsInfo.GoodsInfoImageUrl">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserOrdersDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserOrdersState)
+                </td>
+                <td class="td-manage">
+                    @if (item.UserOrdersState.ToString() == "未发货")
+                    {
+                        <button class="layui-btn" onclick="Fahuo('@item.GoodsOrdersCode')">发货</button>
+                    }
+                    @if (item.UserOrdersState.ToString() == "已收货" && Times.Days>30)
+                    {
+                        <button class="layui-btn" onclick="DeleteOrders(this,'@item.GoodsOrdersCode')">删除</button>
+                    }
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+    @if (a == null)
+    {
+        <div class="page">
+            <div>
+                <a asp-action="GoodsOrdersIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-state="1"
+                   class="prev @prevDisabled">
+                    &lt;&lt;
+                </a>
+                <span class="current">@Model.PageIndex</span>
+                <a asp-action="GoodsOrdersIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-state="1"
+                   class="next @nextDisabled">
+                    &gt;&gt;
+                </a>
+            </div>
+        </div>
+    }
+    @if (a != null)
+    {
+        <div class="page">
+            <div>
+                <a asp-action="GoodsOrdersIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="prev @prevDisabled">
+                    &lt;&lt;
+                </a>
+                <span class="current">@Model.PageIndex</span>
+                <a asp-action="GoodsOrdersIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="next @nextDisabled">
+                    &gt;&gt;
+                </a>
+            </div>
+        </div>
+    }
+</body>
+</html>
+<script type="text/javascript">
+    function Fahuo(Code) {
+        var State = 1;
+        $.ajax({
+            type: 'POST',
+            data: {
+                OrderState: State,
+                Code: Code
+            },
+            dataType: 'json',
+            url: "/GoodsOrder/CheckGoodsOrders",
+            success: function (data) {
+                if (data == 401) {
+                    layer.msg('修改失败!请选择修改订单信息/联系管理员!', { icon: 2, time: 2000 })
+                }
+                if (data == 500) {
+                    layer.msg('修改失败!请联系管理员', { icon: 2, time: 2000 })
+                }
+                if (data == 200) {
+                    layer.msg('修改成功!已发货', { icon: 1, time: 2000 }, function () {
+                        location.replace(location.href)
+                    })
+                }
+            },
+        });
+    }
+    function DeleteOrders(obj,Code) {
+        var url = '/GoodsOrder/DeleteGoodsOrders?Code=' + Code;
+        if (code = null) {
+            layer.msg('请选择需要删除的数据!', { icon: 2, time: 1000 });
+        }
+        layer.confirm('确认要删除吗？删除后无法恢复订单', function () {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: null,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data == 404) {
+                        layer.msg('删除失败，未指定删除数据!', { icon: 2, time: 2000 })
+                    }
+                    if (data == 500) {
+                        layer.msg('删除失败，请联系管理员!', { icon: 2, time: 2000 })
+                    }
+                    if (data == 200) {
+                        layer.msg('成功删除!', { icon: 1, time: 2000 })
+                        location.replace(location.href)
+                    }
+                }
+            })
+        })
+    }
+</script>
+

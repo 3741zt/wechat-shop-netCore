@@ -1,0 +1,129 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <link href="~/css/font.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+</head>
+<body>
+    <div class="x-body">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>管理员姓名
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" name="AdminUserName" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>登陆账号
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" name="AdminUserNumber" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>管理员电话号码
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" name="AdminUserPhoneNumber" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_pass" class="layui-form-label">
+                <span class="x-red">*</span>密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" name="pass" required="" lay-verify="pass"
+                       autocomplete="off" class="layui-input" value="">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                6到16个字符
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>管理员权限</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <select name="period_type" lay-verify="required" lay-filter="period" id="RoleType">
+                    <option value="" selected>请选择</option>
+                    <option value="0">轮播图管理员</option>
+                    <option value="1">商品管理员</option>
+                    <option value="2">订单管理员</option>
+                    <option value="3">超级管理员</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>管理员性别</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <select name="period_type" lay-verify="required" lay-filter="period" id="AdminUsersex">
+                    <option value="" selected>请选择</option>
+                    <option value="0">男</option>
+                    <option value="1">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button class="layui-btn" lay-filter="add" onclick="AddAdminUsers();" href="javascript:;">
+                保存
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    function AddAdminUsers() {
+        var AdminUserName = $("input[name='AdminUserName']").val();
+        var AdminUserNumber = $("input[name='AdminUserNumber']").val();
+        var AdminUserPhoneNumber = $("input[name='AdminUserPhoneNumber']").val();
+        var AdminUserPwd = $("input[name='pass']").val();
+        var RoleType = $("#RoleType").val();
+        var AdminUsersex = $("#AdminUsersex").val();
+        $.ajax({
+            type: 'POST',
+            data: {
+                AdminUsersex: AdminUsersex,
+                RoleType: RoleType,
+                AdminUserName: AdminUserName,
+                AdminUserNumber: AdminUserNumber,
+                AdminUserPhoneNumber: AdminUserPhoneNumber,
+                AdminUserPwd: AdminUserPwd,
+            },
+            dataType: 'json',
+            url: "/AdminUsers/AdminUsersCreates",
+            success: function (data) {
+                if (data == 400) {
+                    layer.msg('添加失败!请输入账号/密码/姓名/权限信息!', { icon: 2, time: 2000 })
+                }
+                if (data == 500) {
+                    layer.msg('添加失败!请联系管理员', { icon: 2, time: 2000 })
+                }
+                if (data == 201) {
+                    layer.msg("账号/名称/手机号重复存在！", { icon: 2, time: 2000 });
+                }
+                if (data == 200) {
+                    layer.msg('添加成功!', { icon: 1, time: 2000 }, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                        // 可以对父窗口进行刷新
+                        x_admin_father_reload();
+                    })
+                }
+            },
+        });
+    }
+</script>

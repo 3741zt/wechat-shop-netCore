@@ -1,0 +1,180 @@
+﻿@model PaginatedList<ztbiyesheji.Models.GoodsDetailImage>
+@using ContosoUniversity;
+@{
+    Layout = null;
+    var a = @ViewData["currentFilter"];
+
+}
+
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <link href="~/css/font.css" rel="stylesheet" />
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+</head>
+<body>
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">添加</a>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i>
+        </a>
+    </div>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so layui-form-pane" asp-action="GoodsDetailImageIndex">
+            <div class="layui-input-inline">
+                <select name="search" lay-verify="required" lay-filter="period" lay-search>
+                    @if (@ViewBag.SearchName != null)
+                    {
+                        <option value="@ViewData["currentFilter"]" selected>@ViewBag.SearchName.GoodsDetailName</option>
+                    }
+                    @if (@ViewBag.SearchName == null)
+                    {
+                        <option value="" selected>请选择，可以搜索选择</option>
+                    }
+                    @foreach (var item in ViewBag.GoodsDetailsTotales)
+                    {
+                        <option value=" @item.GoodsDetailCode">@item.GoodsDetailName</option>
+                    }
+                </select>
+            </div>
+            <button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        <button class="layui-btn" onclick="x_admin_show('添加商品详细信息图','/Goods/GoodsDetailImageCreate')"><i class="layui-icon"></i>添加</button>
+        @if (a == null)
+        {
+
+            <span class="x-right" style="line-height:40px">共有数据：@ViewBag.Total 条,共有页数：@ViewBag.Totalpage 页 </span>
+        }
+        @if (a != null)
+        {
+
+            <span class="x-right" style="line-height:40px">共有数据：@ViewBag.SearchCount 条,共有页数： @ViewBag.SearchPage 页 </span>
+        }
+    </xblock>
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>商品详细信息图片编号</th>
+                <th>上级名称</th>
+                <th>商品图片</th>
+                <th>商品详细信息图片</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                GoodsDetail goodsDetails = ((List<GoodsDetail>)ViewBag.GoodsDetailses).FirstOrDefault(m => m.GoodsDetailCode == item.GoodsDetailCode);
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GoodsDetailImageCode)
+                    </td>
+                    <td>
+                        @goodsDetails.GoodsDetailName
+                    </td>
+                    <td>
+                        <img src="@Html.DisplayFor(modelItem => item.GoodsDetailImageUrl)" />
+                    </td>
+                    <td>
+                        <img src="@Html.DisplayFor(modelItem => item.GoodsDetailXImageUrl)" />
+                    </td>
+                    <td class="td-manage">
+                        <a title="编辑" onclick="x_admin_show('编辑详情信息图','/Goods/GoodsDetailImageDetails?Id=@item.GoodsDetailImageCode')" href="javascript:;">
+                            <i class="layui-icon">&#xe642;</i>
+                        </a>
+                        <a title="删除" onclick="member_del(this,'@item.GoodsDetailImageCode')" href="javascript:;">
+                            <i class="layui-icon">&#xe640;</i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+    @if (a == null)
+    {
+        <div class="page">
+            <div>
+                <a asp-action="GoodsDetailImageIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-state="1"
+                   class="prev @prevDisabled">
+                    &lt;&lt;
+                </a>
+                <span class="current">@Model.PageIndex</span>
+                <a asp-action="GoodsDetailImageIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-state="1"
+                   class="next @nextDisabled">
+                    &gt;&gt;
+                </a>
+            </div>
+        </div>
+    }
+    @if (a != null)
+    {
+        <div class="page">
+            <div>
+                <a asp-action="GoodsDetailImageIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="prev @prevDisabled">
+                    &lt;&lt;
+                </a>
+                <span class="current">@Model.PageIndex</span>
+                <a asp-action="GoodsDetailImageIndex"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="next @nextDisabled">
+                    &gt;&gt;
+                </a>
+            </div>
+        </div>
+    }
+</body>
+</html>
+<script type="text/javascript">
+    function member_del(obj, code) {
+        var url = '/Goods/DeleteGoodsDetailImage?code=' + code;
+        if (code = null) {
+            layer.msg('请选择需要删除的数据!', { icon: 2, time: 1000 });
+        }
+        layer.confirm('确认要删除吗？', function () {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: null,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data == 500) {
+                        layer.msg('删除失败，未指定删除数据!', { icon: 2, time: 2000 })
+                    } 
+                    if (data == 200) {
+                        layer.msg('成功删除!', { icon: 1, time: 2000 })
+                        location.replace(location.href)
+                    }
+                }
+            })
+        })
+    }
+</script>
+

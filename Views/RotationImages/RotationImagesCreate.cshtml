@@ -1,0 +1,96 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/css/xadmin.css" rel="stylesheet" />
+    <link href="~/css/font.css" rel="stylesheet" />
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/xadmin.js"></script>
+    <script src="~/js/cookie.js"></script>
+    <script src="~/lib/layui/layui.js"></script>
+</head>
+<body>
+    <div class="x-body">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>轮播图图片地址
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="RotationImagesUrl" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>轮播图图片效果展示
+            </label>
+            <div class="layui-input-inline">
+                <img src="" id="img-change">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>轮播图跳转地址
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="RotationImagesJumpUrl" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button class="layui-btn" lay-filter="add" onclick="AddRotationImages();"href="javascript:;">
+                保存
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $("#RotationImagesUrl").bind('input propertychange', function () {
+        var RotationImagesUrl = $("#RotationImagesUrl").val();
+        $("#img-change").attr("src", RotationImagesUrl);
+    }); 
+    function AddRotationImages() {
+        var RotationImagesUrl = $("#img-change").attr("src");
+        var RotationImagesJumpUrl = $("#RotationImagesJumpUrl").val();
+        if (RotationImagesUrl == "") {
+            layer.msg("请输入正确的图片地址！");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            data: {
+                RotationImagesUrl: RotationImagesUrl,
+                RotationImagesJumpUrl: RotationImagesJumpUrl
+            },
+            dataType: 'json',
+            url: "/RotationImages/RotationImagesCreates",
+            success: function (data) {
+                if (data == 404) {
+                    layer.msg('添加失败!，请联系管理员', { icon: 2, time: 2000 })
+                }
+                if (data == 500) {
+                    layer.msg("未选择图片!，请重新输入图片地址", { icon: 2, time: 2000 });
+                }
+                if (data == 201) {
+                    layer.msg("不能重复添加！", { icon: 2, time: 2000 });
+                }
+                if (data == 200) {
+                    layer.msg('添加成功!', { icon: 1, time: 2000 }, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                        // 可以对父窗口进行刷新 
+                        x_admin_father_reload();
+                    })
+                }
+            },
+        });
+    }
+</script>
